@@ -1,8 +1,14 @@
 # Create path variables
 $downloadsPath = "$env:USERPROFILE\Downloads"
 $documentsPath = "$env:USERPROFILE\Documents"
-$archivePath = "$documentsPath\Archive"
+$scriptRootDirectory = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
+$archivePath = Join-Path -Path $scriptRootDirectory -ChildPath "Archive"
+$logFilePath = Join-Path -Path $scriptRootDirectory -ChildPath "log.txt"
 
+# Create the Archive folder if it doesn't exist
+if (-not (Test-Path $archivePath)) {
+    New-Item -Path $archivePath -ItemType Directory | Out-Null
+}
 
 # Create the Archive folder if it doesn't exist
 if (-not (Test-Path $archivePath)) {
@@ -20,12 +26,18 @@ function MoveToArchive([string]$existingFilePath) {
 
     # Move the existing file to the archive folder with a timestamp
     Move-Item -Path $existingFile.FullName -Destination $archivedFilePath
+
+    # Log the action to the log file
+    Add-Content -Path $logFilePath -Value "File '$existingFile' moved to '$archivedFilePath' at $(Get-Date)"
 }
 
 # Function to move the newly downloaded file to the Documents folder
 function MoveToDocuments([string]$newFilePath) {
     # Move the newly downloaded file to the Documents folder
     Move-Item -Path $newFilePath -Destination $documentsPath
+
+    # Log the action to the log file
+    Add-Content -Path $logFilePath -Value "File '$newFilePath' moved to '$documentsPath' at $(Get-Date)"
 }
 
 while ($true) {
