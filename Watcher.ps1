@@ -1,65 +1,49 @@
-# Ascii art
-$asciiArt = @"
-   ____________    __   _       __      __       __             
-  / ____/ ___/ |  / /  | |     / /___ _/ /______/ /_  ___  _____
- / /    \__ \| | / /   | | /| / / __ `/ __/ ___/ __ \/ _ \/ ___/
-/ /___ ___/ /| |/ /    | |/ |/ / /_/ / /_/ /__/ / / /  __/ /    
-\____//____/ |___/     |__/|__/\__,_/\__/\___/_/ /_/\___/_/     
-                                                                
-------------------------- By SkanCode --------------------------
+# Create path variables
+$downloadsPath = "$env:USERPROFILE\Downloads"
+$documentsPath = "$env:USERPROFILE\Documents"
+$archivePath = "$documentsPath\Archive"
 
-"@
 
-# Paths to folders and files
-$downloadPath = "C:\Users\AndreasVifert\Downloads"
-$documentsPath = "C:\Users\AndreasVifert\Documents"
-$archivePath = "C:\Users\AndreasVifert\Documents\Skancode\CSVWatcher\archive"
-$logPath = "C:\Users\AndreasVifert\Documents\Skancode\CSVWatcher\log.txt"
-
-$filter = "*.csv"
-
-$watcher = New-Object System.IO.FileSystemWatcher
-$watcher.Path = $downloadPath
-$watcher.Filter = $filter
-$watcher.IncludeSubdirectories = $false
-$watcher.EnableRaisingEvents = $true
-
-<#
-    Action to take when a .csv file is created in the download folder.
-    1. Rename and move the oldest file in the documents folder to the archive folder.
-    2. Move the new file to the documents folder.
-    3. Write to log file.
-#>
-
-$action = {
-    $newFile = $Event.SourceEventArgs.Name
-    $oldFile = Get-ChildItem -Path $documentsPath -Filter $filter | Sort-Object -Property LastWriteTime | Select-Object -First 1
-
-    if ($oldFile) {
-      $datePrefix = Get-Date -Format "dd-MM-yyyy_HH-mm-ss"
-      $newFileName = "${datePrefix}_$($oldFile.Name)"
-      $newFilePath = Join-Path -Path $archivePath -ChildPath $newFileName
-  
-      Move-Item -Path $oldFile.FullName -Destination $newFilePath -Force
-  
-      $logLine = "$(Get-Date), Moved old file $($oldFile.Name) to archive folder as $($newFileName)."
-      Add-Content -Path $logPath -Value $logLine
-      Write-Host $logLine
-  }
-
-    Move-Item -Path "$downloadPath\$newFile" -Destination $documentsPath -Force
-    $logLine = "$(Get-Date), Moved new file $newFile to documents folder."
-    Add-Content -Path $logPath -Value $logLine
-    Write-Host $logLine
+# Create the Archive folder if it doesn't exist
+if (-not (Test-Path $archivePath)) {
+    New-Item -Path $archivePath -ItemType Directory | Out-Null
 }
 
-Register-ObjectEvent -InputObject $watcher -EventName Created -Action $action > $null
+# Function to move the existing file to the archive folder with a timestamp
+function MoveToArchive([string]$existingFilePath) {
+    $existingFile = Get-Item -Path $existingFilePath
 
-Write-Host $asciiArt
-Write-Host "Watching $downloadPath for new .csv files..."
-Write-Host "Press Ctrl+C to stop."
+    # Generate a timestamp for renaming the existing file
+    $timestamp = Get-Date -Format "dd-MM-yyyy_HH-mm-ss"
+    $archivedFileName = "{0}_{1}.csv" -f $timestamp, $existingFile.BaseName
+    $archivedFilePath = Join-Path -Path $archivePath -ChildPath $archivedFileName
+
+    # Move the existing file to the archive folder with a timestamp
+    Move-Item -Path $existingFile.FullName -Destination $archivedFilePath
+}
+
+# Function to move the newly downloaded file to the Documents folder
+function MoveToDocuments([string]$newFilePath) {
+    # Move the newly downloaded file to the Documents folder
+    Move-Item -Path $newFilePath -Destination $documentsPath
+}
 
 while ($true) {
-    Wait-Event -Timeout 1
+    # Get all .csv files in the Downloads folder
+    $csvFiles = Get-ChildItem -Path $downloadsPath -Filter "*.csv" -File
+
+    foreach ($csvFile in $csvFiles) {
+        # Check if there is an existing .csv file in the Documents folder
+        $existingFile = Get-ChildItem -Path $documentsPath -Filter "*.csv" -File
+
+        if ($existingFile) {
+            MoveToArchive -existingFilePath $existingFile.FullName
+        }
+
+        MoveToDocuments -newFilePath $csvFile.FullName
+    }
+
+    # Pause for 1 second before checking again
+    Start-Sleep -Seconds 1
     [System.GC]::Collect()
 }
