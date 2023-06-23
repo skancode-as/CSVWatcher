@@ -43,8 +43,9 @@ function MoveToArchive([string]$existingFilePath) {
     # Move the existing file to the archive folder with a timestamp
     Move-Item -Path $existingFile.FullName -Destination $archivedFilePath
 
-    # Log the action to the log file
-    Add-Content -Path $logFilePath -Value "File '$existingFile' moved to '$archivedFilePath' at $(Get-Date)"
+    # Log the action to the log file and terminal
+    Add-Content -Path $logFilePath -Value "$(Get-Date): Old file archived at '$archivePath'"
+    Write-Host -ForegroundColor Green "$(Get-Date): Old file archived at '$archivePath'"
 }
 
 # Function to move the newly downloaded file to the Documents folder
@@ -52,8 +53,9 @@ function MoveToDocuments([string]$newFilePath) {
     # Move the newly downloaded file to the Documents folder
     Move-Item -Path $newFilePath -Destination $documentsPath
 
-    # Log the action to the log file
-    Add-Content -Path $logFilePath -Value "File '$newFilePath' moved to '$documentsPath' at $(Get-Date)"
+    # Log the action to the log file and terminal
+    Add-Content -Path $logFilePath -Value "$(Get-Date): New file moved to '$documentsPath'"
+    Write-Host -ForegroundColor Green "$(Get-Date): New file moved to '$documentsPath'"
 }
 
 while ($true) {
