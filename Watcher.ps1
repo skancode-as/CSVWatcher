@@ -1,3 +1,14 @@
+# Ascii art
+$asciiArt = @"
+   ____________    __   _       __      __       __             
+  / ____/ ___/ |  / /  | |     / /___ _/ /______/ /_  ___  _____
+ / /    \__ \| | / /   | | /| / / __ `/ __/ ___/ __ \/ _ \/ ___/
+/ /___ ___/ /| |/ /    | |/ |/ / /_/ / /_/ /__/ / / /  __/ /    
+\____//____/ |___/     |__/|__/\__,_/\__/\___/_/ /_/\___/_/     
+                                                                
+
+"@
+
 # Paths to folders and files
 $downloadPath = "C:\Users\AndreasVifert\Downloads"
 $documentsPath = "C:\Users\AndreasVifert\Documents"
@@ -36,6 +47,7 @@ $action = {
 
 Register-ObjectEvent -InputObject $watcher -EventName Created -Action $action > $null
 
+Write-Host $asciiArt
 Write-Host "Watching $downloadPath for new .csv files..."
 Write-Host "Press Ctrl+C to stop."
 
