@@ -1,0 +1,9 @@
+# log & archive
+/log.txt
+/archive/
+
+# git
+/.git/
+
+# test files
+/test/
