@@ -1,6 +1,6 @@
 # log & archive
 /log.txt
-/archive/
+/archive/*
 
 # git
 /.git/
