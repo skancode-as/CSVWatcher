@@ -23,6 +23,13 @@ $watcher.Filter = $filter
 $watcher.IncludeSubdirectories = $false
 $watcher.EnableRaisingEvents = $true
 
+<#
+    Action to take when a .csv file is created in the download folder.
+    1. Rename and move the oldest file in the documents folder to the archive folder.
+    2. Move the new file to the documents folder.
+    3. Write to log file.
+#>
+
 $action = {
     $newFile = $Event.SourceEventArgs.Name
     $oldFile = Get-ChildItem -Path $documentsPath -Filter $filter | Sort-Object -Property LastWriteTime | Select-Object -First 1
