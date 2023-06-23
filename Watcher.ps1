@@ -1,9 +1,25 @@
+# Ascii art
+$asciiArt = @"
+   ____________    __   _       __      __       __             
+  / ____/ ___/ |  / /  | |     / /___ _/ /______/ /_  ___  _____
+ / /    \__ \| | / /   | | /| / / __ `/ __/ ___/ __ \/ _ \/ ___/
+/ /___ ___/ /| |/ /    | |/ |/ / /_/ / /_/ /__/ / / /  __/ /    
+\____//____/ |___/     |__/|__/\__,_/\__/\___/_/ /_/\___/_/     
+                                                                
+------------------------- By SkanCode --------------------------
+
+"@
+
 # Create path variables
 $downloadsPath = "$env:USERPROFILE\Downloads"
 $documentsPath = "$env:USERPROFILE\Documents"
 $scriptRootDirectory = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
 $archivePath = Join-Path -Path $scriptRootDirectory -ChildPath "Archive"
 $logFilePath = Join-Path -Path $scriptRootDirectory -ChildPath "log.txt"
+
+Write-Host $asciiArt
+Write-Host "Watching $downloadPath for new .csv files..."
+Write-Host "Press Ctrl+C to stop."
 
 # Create the Archive folder if it doesn't exist
 if (-not (Test-Path $archivePath)) {
