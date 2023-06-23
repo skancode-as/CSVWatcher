@@ -18,7 +18,7 @@ $archivePath = Join-Path -Path $scriptRootDirectory -ChildPath "Archive"
 $logFilePath = Join-Path -Path $scriptRootDirectory -ChildPath "log.txt"
 
 Write-Host $asciiArt
-Write-Host "Watching $downloadPath for new .csv files..."
+Write-Host "Watching $downloadsPath for new .csv files..."
 Write-Host "Press Ctrl+C to stop."
 
 # Create the Archive folder if it doesn't exist
