@@ -26,11 +26,6 @@ if (-not (Test-Path $archivePath)) {
     New-Item -Path $archivePath -ItemType Directory | Out-Null
 }
 
-# Create the Archive folder if it doesn't exist
-if (-not (Test-Path $archivePath)) {
-    New-Item -Path $archivePath -ItemType Directory | Out-Null
-}
-
 # Function to move the existing file to the archive folder with a timestamp
 function MoveToArchive([string]$existingFilePath) {
     $existingFile = Get-Item -Path $existingFilePath
