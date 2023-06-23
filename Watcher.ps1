@@ -34,7 +34,7 @@ $action = {
     Write-Host $logLine
 }
 
-Register-ObjectEvent -InputObject $watcher -EventName Created -Action $action
+Register-ObjectEvent -InputObject $watcher -EventName Created -Action $action > $null
 
 Write-Host "Watching $downloadPath for new .csv files..."
 Write-Host "Press Ctrl+C to stop."
